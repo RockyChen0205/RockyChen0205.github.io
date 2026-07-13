@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Yu Chen — Multimodal Agents & Perception</title>
+<title>Yu Chen</title>
 <meta name="description" content="Yu Chen — Incoming PhD student at UCAS working on multimodal agent post-training: teaching agents to perceive the world and decide the way we do." />
 <link rel="icon" href="favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
@@ -224,9 +224,8 @@ h1.name {
 
 .roleline {
   margin-top: 26px; font-size: 1.02rem; color: var(--ink-muted);
-  display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center;
+  display: flex; flex-direction: column; gap: 4px;
 }
-.roleline .sep { color: var(--ink-subtle); }
 .roleline strong { color: var(--ink); font-weight: 600; }
 
 /* portrait */
@@ -358,6 +357,23 @@ section { padding: 60px 0; position: relative; }
 }
 .pub:hover { transform: translateX(4px); }
 .pub:last-child { border-bottom: 0; }
+.pub-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 11px; }
+.badge {
+  font-size: 0.8rem; font-weight: 700; letter-spacing: -0.01em;
+  padding: 4px 12px; border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
+}
+.cofirst {
+  font-size: 0.76rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+  color: var(--ink-muted); border: 1px solid var(--hairline);
+}
+.venue-pre {
+  font-size: 0.84rem; font-weight: 600; color: var(--ink-subtle);
+  font-variant-numeric: tabular-nums;
+}
 .pub .pub-title {
   font-weight: 600; font-size: 1.16rem; line-height: 1.4; letter-spacing: -0.018em;
   margin-bottom: 8px; transition: color var(--ease);
@@ -365,11 +381,9 @@ section { padding: 60px 0; position: relative; }
 .pub:hover .pub-title { color: var(--accent); }
 .pub .authors { font-size: 0.98rem; color: var(--ink-muted); line-height: 1.5; }
 .pub .authors b { color: var(--ink); font-weight: 600; }
-.pub .venue {
-  font-size: 0.82rem; font-weight: 600; color: var(--accent);
-  margin-top: 7px; letter-spacing: 0; font-variant-numeric: tabular-nums;
-}
-.pub .venue.venue--pre { color: var(--ink-subtle); font-weight: 500; }
+/* citation count (populated client-side from the scholar-crawler branch) */
+.cite-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 0.92rem; color: var(--ink-muted); }
+.cite-badge b { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
 
 /* ============ industry ============ */
 .job {
@@ -463,9 +477,8 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
       <h1 class="name">Yu Chen</h1>
       <p class="thesis">AI researcher &amp; builder, working on <em>multimodal agents</em>.</p>
       <div class="roleline">
-        <span>Incoming <strong>PhD Student</strong> · UCAS</span>
-        <span class="sep">/</span>
-        <span><strong>B.S. in AI</strong> · Southeast University</span>
+        <span>Incoming <strong>PhD Student</strong> · University of Chinese Academy of Sciences</span>
+        <span><strong>B.S.</strong> · Southeast University</span>
       </div>
       <div class="socials">
         <a class="chip" href="mailto:yu.chen.8525@gmail.com">
@@ -551,36 +564,49 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
     <section id="publications">
       <div class="sec-head reveal">
         <h2>Publications</h2>
+        <span class="cite-badge" id="citeBadge" hidden></span>
       </div>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2510.10689" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="badge">ICLR 2026</span><span class="cofirst">Co-first author</span></div>
         <div class="pub-title">OmniVideoBench: Towards Audio-Visual Understanding Evaluation for Omni MLLMs</div>
         <div class="authors">Caorui Li, <b>Yu Chen</b>, Yiyan Ji, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Jiafu Tang, Zhenghao Zhang, Dingling Zhang</div>
-        <div class="venue">ICLR 2026</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2511.04601" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="badge">ICML 2026</span><span class="cofirst">Co-first author</span></div>
         <div class="pub-title">PixCLIP: Achieving Fine-grained Visual Language Understanding via Any-granularity Pixel-Text Alignment Learning</div>
         <div class="authors">Yicheng Xiao, <b>Yu Chen</b>, Haoxuan Ma, Jiale Hong, Caorui Wu, Lingxiang Wu, Haiyun Guo, Jinqiao Wang</div>
-        <div class="venue">ICML 2026</div>
       </a>
 
+      <div class="pub reveal">
+        <div class="pub-meta"><span class="badge">NeurIPS 2025</span></div>
+        <div class="pub-title">FlowPrune: Accelerating Attention Flow Calculation by Pruning Flow Network</div>
+        <div class="authors">Shuo Xu, <b>Yu Chen</b>, Shuxia Lin, Xin Geng, Xu Yang</div>
+      </div>
+
       <a class="pub reveal" href="https://ieeexplore.ieee.org/abstract/document/10890734/" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="badge">ICASSP 2025</span></div>
         <div class="pub-title">STGE-Former: Spatial-Temporal Graph-Enhanced Transformer for EEG-Based Major Depressive Disorder Detection</div>
-        <div class="authors"><b>Yu Chen</b>, et al.</div>
-        <div class="venue">ICASSP 2025</div>
+        <div class="authors"><b>Yu Chen</b>, Chunfeng Yang</div>
+      </a>
+
+      <a class="pub reveal" href="https://arxiv.org/abs/2607.05150" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="venue-pre">arXiv · 2026</span></div>
+        <div class="pub-title">Claim-Level Rubric Rewards for Video Caption Reinforcement Learning</div>
+        <div class="authors">Mingqi Gao, Hongyuan Dong, Yifei Chen, Zhisheng Zhong, Zheng Ruan, Wenjin Hou, <b>Yu Chen</b>, Han Hu, Yansong Tang</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2508.08275" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="venue-pre">arXiv · 2025</span></div>
         <div class="pub-title">MLLM-CBench: A Comprehensive Benchmark for Continual Instruction Tuning of Multimodal LLMs with Chain-of-Thought Reasoning Analysis</div>
         <div class="authors">Haiyun Guo, ZhiYan Hou, <b>Yu Chen</b>, Jinghan Sun, Yadu Zhou, Yuzhe Guo, Shujing Zhu, Kuan Zhu, Jinqiao Wang</div>
-        <div class="venue venue--pre">arXiv · 2025</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2505.08199" target="_blank" rel="noopener">
+        <div class="pub-meta"><span class="venue-pre">arXiv · 2025</span></div>
         <div class="pub-title">A Multi-scale Representation Learning Framework for Long-Term Time Series Forecasting</div>
         <div class="authors">Boshi Gao, Qingjian Ni, Fanbo Ju, <b>Yu Chen</b>, Ziqi Zhao</div>
-        <div class="venue venue--pre">arXiv · 2025</div>
       </a>
     </section>
 
@@ -730,6 +756,21 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
     setTimeout(function () {
       reveals.forEach(function (el) { el.classList.add("in"); });
     }, 3000);
+  }
+
+  // Google Scholar citation count — written daily by the crawler workflow to the
+  // `google-scholar-stats` branch; fetched here via the jsDelivr CDN. Fails silently.
+  var citeEl = document.getElementById("citeBadge");
+  if (citeEl && "fetch" in window) {
+    fetch("https://cdn.jsdelivr.net/gh/RockyChen0205/RockyChen0205.github.io@google-scholar-stats/results/gs_data_shieldsio.json")
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        if (d && d.message) {
+          citeEl.innerHTML = "<b>" + d.message + "</b>&nbsp;citations · Google Scholar";
+          citeEl.hidden = false;
+        }
+      })
+      .catch(function () {});
   }
 })();
 </script>

@@ -1,0 +1,32 @@
+name: Get Citation Data
+
+on:
+  workflow_dispatch:        # allow manual runs from the Actions tab
+  schedule:
+    - cron: '0 8 * * *'     # daily
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Crawl citations and push to google-scholar-stats
+        env:
+          GOOGLE_SCHOLAR_ID: ${{ secrets.GOOGLE_SCHOLAR_ID }}
+        run: |
+          cd ./google_scholar_crawler
+          pip install -r requirements.txt
+          python main.py
+          cd ./results
+          git init -q
+          git config --local user.name  "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add *.json
+          git commit -q -m "Update citation data"
+          git push --force "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" HEAD:google-scholar-stats
