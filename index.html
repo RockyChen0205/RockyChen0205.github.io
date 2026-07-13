@@ -384,6 +384,9 @@ section { padding: 60px 0; position: relative; }
 /* citation count (populated client-side from the scholar-crawler branch) */
 .cite-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 0.92rem; color: var(--ink-muted); }
 .cite-badge b { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
+.authors sup { color: var(--accent); font-weight: 700; }
+.pub-note { margin-top: 16px; font-size: 0.86rem; color: var(--ink-subtle); }
+.pub-note sup { color: var(--accent); font-weight: 700; }
 
 /* ============ industry ============ */
 .job {
@@ -518,6 +521,30 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
 
     <hr class="rule" />
 
+    <section id="education">
+      <div class="sec-head reveal">
+        <h2>Education</h2>
+      </div>
+      <div class="edu reveal">
+        <div class="logo"><img src="assets/ucas.svg" alt="University of Chinese Academy of Sciences" /></div>
+        <div>
+          <div class="deg">Ph.D.</div>
+          <div class="school">University of Chinese Academy of Sciences (UCAS) · Beijing</div>
+        </div>
+        <div class="when">2025 — Present</div>
+      </div>
+      <div class="edu reveal">
+        <div class="logo"><img src="assets/seu.svg" alt="Southeast University" /></div>
+        <div>
+          <div class="deg">B.S. in Artificial Intelligence</div>
+          <div class="school">Southeast University · Nanjing</div>
+        </div>
+        <div class="when">2021 — 2025</div>
+      </div>
+    </section>
+
+    <hr class="rule" />
+
     <section id="research">
       <div class="sec-head reveal">
         <h2>Research</h2>
@@ -564,19 +591,19 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
     <section id="publications">
       <div class="sec-head reveal">
         <h2>Publications</h2>
-        <span class="cite-badge" id="citeBadge" hidden></span>
+        <span class="cite-badge" id="citeBadge"><b>58</b>&nbsp;citations · Google Scholar</span>
       </div>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2510.10689" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="badge">ICLR 2026</span><span class="cofirst">Co-first author</span></div>
+        <div class="pub-meta"><span class="badge">ICLR 2026</span></div>
         <div class="pub-title">OmniVideoBench: Towards Audio-Visual Understanding Evaluation for Omni MLLMs</div>
-        <div class="authors">Caorui Li, <b>Yu Chen</b>, Yiyan Ji, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Jiafu Tang, Zhenghao Zhang, Dingling Zhang</div>
+        <div class="authors">Caorui Li<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Yiyan Ji, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Wentao Wang, Zhenghao Song, Dingling Zhang, et al.</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2511.04601" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="badge">ICML 2026</span><span class="cofirst">Co-first author</span></div>
+        <div class="pub-meta"><span class="badge">ICML 2026</span></div>
         <div class="pub-title">PixCLIP: Achieving Fine-grained Visual Language Understanding via Any-granularity Pixel-Text Alignment Learning</div>
-        <div class="authors">Yicheng Xiao, <b>Yu Chen</b>, Haoxuan Ma, Jiale Hong, Caorui Wu, Lingxiang Wu, Haiyun Guo, Jinqiao Wang</div>
+        <div class="authors">Yicheng Xiao<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Haoxuan Ma<sup>*</sup>, Jiale Hong, Caorui Li, Lingxiang Wu, Haiyun Guo, Jinqiao Wang</div>
       </a>
 
       <div class="pub reveal">
@@ -608,6 +635,8 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
         <div class="pub-title">A Multi-scale Representation Learning Framework for Long-Term Time Series Forecasting</div>
         <div class="authors">Boshi Gao, Qingjian Ni, Fanbo Ju, <b>Yu Chen</b>, Ziqi Zhao</div>
       </a>
+
+      <p class="pub-note reveal"><sup>*</sup> Equal contribution</p>
     </section>
 
     <hr class="rule" />
@@ -645,30 +674,6 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
           <div class="desc">Multimodal large-model training and inference optimization — accelerating and migrating workloads from GPUs to Ascend NPUs.</div>
         </div>
         <div class="when">Jun 2024 — Sep 2024</div>
-      </div>
-    </section>
-
-    <hr class="rule" />
-
-    <section id="education">
-      <div class="sec-head reveal">
-        <h2>Education</h2>
-      </div>
-      <div class="edu reveal">
-        <div class="logo"><img src="assets/ucas.svg" alt="University of Chinese Academy of Sciences" /></div>
-        <div>
-          <div class="deg">Ph.D.</div>
-          <div class="school">University of Chinese Academy of Sciences (UCAS) · Beijing</div>
-        </div>
-        <div class="when">2025 — Present</div>
-      </div>
-      <div class="edu reveal">
-        <div class="logo"><img src="assets/seu.svg" alt="Southeast University" /></div>
-        <div>
-          <div class="deg">B.S. in Artificial Intelligence</div>
-          <div class="school">Southeast University · Nanjing</div>
-        </div>
-        <div class="when">2021 — 2025</div>
       </div>
     </section>
   </div>
