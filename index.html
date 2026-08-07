@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,83 +12,102 @@
 <link rel="manifest" href="site.webmanifest" />
 <meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#0c0e13" media="(prefers-color-scheme: dark)" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="preload" href="assets/newsreader-var.woff2" as="font" type="font/woff2" crossorigin />
+<script>
+/* Apply a stored theme before first paint. Without this, a stored choice that
+   disagrees with the OS setting shows the wrong palette for a frame. */
+(function () {
+  try {
+    var t = localStorage.getItem("theme");
+    if (t === "light" || t === "dark") {
+      document.documentElement.style.colorScheme = "only " + t;
+      document.documentElement.setAttribute("data-theme", t);
+    }
+  } catch (e) {}
+})();
+</script>
 <style>
-/* ============ Perception Spectrum — design tokens ============ */
-:root {
-  /* type — Apple system sans (SF Pro), with Inter as the cross-platform stand-in */
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Segoe UI", system-ui, sans-serif;
-  --serif: var(--sans);
-  --mono: var(--sans);
+/* Newsreader, variable — opsz axis carries real weight here: the same face
+   renders from ~68px display down to 22px h3. Subset to wght 600 only. */
+@font-face {
+  font-family: "Newsreader";
+  src: url("assets/newsreader-var.woff2") format("woff2-variations");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
-  /* accents — a cool perception spectrum led by blue */
-  --blue: #2563d9;          /* primary */
-  --blue-bright: #3f7bee;
-  --cyan: #0e8f9e;          /* the water, blue's near neighbor */
-  --cyan-bright: #14a7b8;
-  --coral: #e5556f;         /* one warm spark, used scarcely */
+/* ============ design tokens ============ */
+:root {
+  /* type — serif is the display voice; system sans does everything else */
+  --serif: "Newsreader", "Iowan Old Style", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+
+  /* type scale — 8 steps against an 18px base */
+  --fs-display: clamp(2.9rem, 6.5vw, 4.25rem);
+  --fs-h2: clamp(1.85rem, 3.6vw, 2.25rem);
+  --fs-h3: 1.375rem;
+  --fs-tagline: clamp(1.25rem, 2.4vw, 1.5rem);
+  --fs-lead: 1.125rem;
+  --fs-body: 1rem;
+  --fs-meta: 0.875rem;
+  --fs-micro: 0.75rem;
 
   /* motion */
   --spring: 480ms cubic-bezier(0.22, 1, 0.36, 1);
   --ease: 260ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* measure and rhythm */
   --maxw: 760px;
+  --maxw-hero: 1000px;
+  --gutter: 28px;
+  --space-section: 96px;
+  --space-head: 28px;
 }
 
-/* Light theme (default fallback) */
+/* One palette, one source of truth. light-dark() resolves against the used
+   color-scheme, which the toggle pins to `only light` / `only dark`. */
 :root {
-  --ground: #f4f6fa;
-  --ground-2: #eaeef4;
-  --surface: #ffffff;
-  --ink: #14181f;
-  --ink-muted: #56606f;
-  --ink-subtle: #93a0af;
-  --hairline: #e2e7ef;
-  --accent: var(--blue);
-  --accent-2: var(--cyan);
-  --accent-3: var(--coral);
-  --blob-blue: rgba(37,99,217,0.30);
-  --blob-cyan: rgba(14,143,158,0.28);
-  --blob-coral: rgba(229,85,111,0.22);
-  --nav-bg: rgba(244,246,250,0.72);
-  --glass: rgba(255,255,255,0.62);
-  --glass-brd: rgba(15,23,42,0.09);
+  color-scheme: light dark;
+  --ground:     light-dark(#fbfbfd, #0c0e13);
+  --ground-2:   light-dark(#f2f4f8, #12151c);
+  --surface:    light-dark(#ffffff, #161a22);
+  --ink:        light-dark(#12141a, #eef2f8);
+  --ink-muted:  light-dark(#56606f, #a2acbd);
+  --ink-subtle: light-dark(#8b96a5, #6a7488);
+  --hairline:   light-dark(#e6e8ee, rgba(255,255,255,0.10));
+  --accent:     light-dark(#2563d9, #5b8dff);
+  /* logo plate — the university SVGs are dark ink and full-colour, so they
+     need a light ground in both themes; dimmed in dark so it doesn't glare */
+  --plate:      light-dark(#ffffff, #dfe3ea);
+  --nav-bg:     light-dark(rgba(251,251,253,0.72), rgba(12,14,19,0.66));
 }
-@media (prefers-color-scheme: dark) {
+
+/* Pre-2024 browsers only. A custom property holding an unsupported function
+   still parses, failing later at substitution — so a plain fallback
+   declaration before light-dark() would never win. Hence @supports, and hence
+   the duplication, quarantined where modern browsers never read it. */
+@supports not (color: light-dark(#fff, #000)) {
   :root {
-    --ground: #0c0e13;
-    --ground-2: #12151c;
-    --surface: #161a22;
-    --ink: #eef2f8;
-    --ink-muted: #a2acbd;
-    --ink-subtle: #6a7488;
-    --hairline: rgba(255,255,255,0.10);
-    --accent: #5b8dff;
-    --accent-2: #4fc3d4;
-    --accent-3: #ff7a94;
-    --blob-blue: rgba(91,141,255,0.28);
-    --blob-cyan: rgba(79,195,212,0.26);
-    --blob-coral: rgba(255,122,148,0.20);
-    --nav-bg: rgba(12,14,19,0.66);
-    --glass: rgba(28,33,44,0.52);
-    --glass-brd: rgba(255,255,255,0.09);
+    --ground: #fbfbfd; --ground-2: #f2f4f8; --surface: #ffffff;
+    --ink: #12141a; --ink-muted: #56606f; --ink-subtle: #8b96a5;
+    --hairline: #e6e8ee; --accent: #2563d9; --plate: #ffffff;
+    --nav-bg: rgba(251,251,253,0.72);
   }
-}
-/* Explicit toggle wins over the media query, both directions */
-:root[data-theme="light"] {
-  --ground: #f4f6fa; --ground-2: #eaeef4; --surface: #ffffff;
-  --ink: #14181f; --ink-muted: #56606f; --ink-subtle: #93a0af;
-  --hairline: #e2e7ef; --accent: var(--blue); --accent-2: var(--cyan); --accent-3: var(--coral);
-  --blob-blue: rgba(37,99,217,0.30); --blob-cyan: rgba(14,143,158,0.28); --blob-coral: rgba(229,85,111,0.22);
-  --nav-bg: rgba(244,246,250,0.72); --glass: rgba(255,255,255,0.62); --glass-brd: rgba(15,23,42,0.09);
-}
-:root[data-theme="dark"] {
-  --ground: #0c0e13; --ground-2: #12151c; --surface: #161a22;
-  --ink: #eef2f8; --ink-muted: #a2acbd; --ink-subtle: #6a7488;
-  --hairline: rgba(255,255,255,0.10); --accent: #5b8dff; --accent-2: #4fc3d4; --accent-3: #ff7a94;
-  --blob-blue: rgba(91,141,255,0.28); --blob-cyan: rgba(79,195,212,0.26); --blob-coral: rgba(255,122,148,0.20);
-  --nav-bg: rgba(12,14,19,0.66); --glass: rgba(28,33,44,0.52); --glass-brd: rgba(255,255,255,0.09);
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0c0e13; --ground-2: #12151c; --surface: #161a22;
+      --ink: #eef2f8; --ink-muted: #a2acbd; --ink-subtle: #6a7488;
+      --hairline: rgba(255,255,255,0.10); --accent: #5b8dff; --plate: #dfe3ea;
+      --nav-bg: rgba(12,14,19,0.66);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0c0e13; --ground-2: #12151c; --surface: #161a22;
+    --ink: #eef2f8; --ink-muted: #a2acbd; --ink-subtle: #6a7488;
+    --hairline: rgba(255,255,255,0.10); --accent: #5b8dff; --plate: #dfe3ea;
+    --nav-bg: rgba(12,14,19,0.66);
+  }
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -114,13 +133,13 @@ a { color: inherit; text-decoration: none; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 :focus:not(:focus-visible) { outline: none; }
 
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
 
 /* ============ top nav ============ */
 nav {
   position: fixed; inset: 0 0 auto 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 28px;
+  padding: 14px var(--gutter);
   background: var(--nav-bg);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
@@ -130,8 +149,8 @@ nav {
 }
 nav.show { transform: translateY(0); border-bottom-color: var(--hairline); }
 nav .mark {
-  font-family: var(--sans); font-size: 1.05rem; font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--serif); font-size: var(--fs-lead); font-weight: 600;
+  letter-spacing: -0.01em;
   display: inline-flex; align-items: center; gap: 9px;
 }
 nav .mark img {
@@ -141,7 +160,7 @@ nav .mark img {
 nav .mark .dot { color: var(--accent); }
 nav .nav-links { display: flex; align-items: center; gap: 22px; }
 nav .nav-links a {
-  font-size: 0.82rem; color: var(--ink-muted);
+  font-size: var(--fs-meta); color: var(--ink-muted);
   transition: color var(--ease);
 }
 nav .nav-links a:hover { color: var(--ink); }
@@ -170,6 +189,15 @@ header.hero::before {
   content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.04;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
 }
+/* The hero runs wider than the text column, but its text still has to line up
+   with everything below. The 28px gutters cancel on both sides, so the offset
+   is exactly half the difference in container width. Gated at 1040px: below
+   that the hero container is viewport-bound, and a fixed inset would drift. */
+.hero-wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
+@media (min-width: 1040px) {
+  .hero-wrap { max-width: var(--maxw-hero); }
+  .hero-text { padding-left: calc((var(--maxw-hero) - var(--maxw)) / 2); }
+}
 .hero-grid {
   position: relative; z-index: 1;
   display: grid; grid-template-columns: 1fr auto; gap: 44px; align-items: center;
@@ -179,32 +207,24 @@ header.hero::before {
   header.hero { padding-top: 104px; }
 }
 
-.eyebrow {
-  font-size: 0.86rem; font-weight: 600;
-  letter-spacing: 0; color: var(--accent-2); margin-bottom: 18px;
-  display: inline-flex; align-items: center; gap: 9px;
-}
-.eyebrow::before {
-  content: ""; width: 22px; height: 2px; border-radius: 2px; background: var(--accent-2); opacity: 0.8;
-}
-
 h1.name {
-  font-family: var(--sans); font-weight: 700;
-  font-size: clamp(3.2rem, 8.4vw, 5.4rem); line-height: 1.02;
-  letter-spacing: -0.035em; text-wrap: balance;
+  font-family: var(--serif); font-weight: 600;
+  font-size: var(--fs-display); line-height: 1.05;
+  letter-spacing: -0.02em; text-wrap: balance;
   margin-bottom: 20px;
   color: var(--ink);
 }
 h1.name .dot { color: var(--accent); }
+/* sans against the serif name — the contrast is the point */
 .thesis {
   font-family: var(--sans); font-weight: 500;
-  font-size: clamp(1.4rem, 3vw, 1.9rem); line-height: 1.28;
-  letter-spacing: -0.02em; color: var(--ink); max-width: 20ch; text-wrap: balance;
+  font-size: var(--fs-tagline); line-height: 1.32;
+  letter-spacing: -0.02em; color: var(--ink); max-width: 24ch; text-wrap: balance;
 }
 .thesis em { color: var(--accent); font-style: normal; }
 
 .roleline {
-  margin-top: 26px; font-size: 1.02rem; color: var(--ink-muted);
+  margin-top: 26px; font-size: var(--fs-body); color: var(--ink-muted);
   display: flex; flex-direction: column; gap: 4px;
 }
 .roleline strong { color: var(--ink); font-weight: 600; }
@@ -230,7 +250,7 @@ h1.name .dot { color: var(--accent); }
   display: inline-flex; align-items: center; gap: 7px;
   padding: 7px 13px; border-radius: 999px;
   border: 1px solid var(--hairline); background: var(--surface);
-  font-size: 0.82rem; color: var(--ink-muted);
+  font-size: var(--fs-meta); color: var(--ink-muted);
   transition: color var(--ease), border-color var(--ease), transform var(--spring), background var(--ease);
 }
 .chip svg { width: 14px; height: 14px; }
@@ -241,134 +261,107 @@ h1.name .dot { color: var(--accent); }
 .theme-toggle:active { transform: scale(0.94); }
 
 /* ============ sections ============ */
-section { padding: 76px 0; position: relative; }
-.sec-head { margin-bottom: 34px; }
+/* Asymmetric rhythm: generous space before a heading, tight after its rule.
+   The rule belongs to the heading now — no free-standing <hr> between sections. */
+section { padding: var(--space-section) 0 0; position: relative; }
+section:last-of-type { padding-bottom: var(--space-section); }
+.sec-head {
+  margin-bottom: var(--space-head);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  justify-content: space-between; gap: 12px;
+}
 .sec-head h2 {
-  font-family: var(--sans); font-weight: 700;
-  font-size: clamp(2rem, 4.4vw, 2.7rem); letter-spacing: -0.03em;
-  line-height: 1.05;
+  font-family: var(--serif); font-weight: 600;
+  font-size: var(--fs-h2); letter-spacing: -0.01em;
+  line-height: 1.1;
 }
 .lede {
-  font-size: 1.24rem; line-height: 1.62; color: var(--ink-muted);
+  font-size: var(--fs-lead); line-height: 1.65; color: var(--ink-muted);
   max-width: 60ch; letter-spacing: -0.01em;
 }
 .lede + .lede { margin-top: 18px; }
 .lede strong { color: var(--ink); font-weight: 600; }
 
-.rule { height: 1px; background: var(--hairline); border: 0; }
-
 /* ============ research timeline ============ */
 .timeline { position: relative; padding-left: 34px; }
+/* Recency reads top-down: the rail fades into the past. The floor stays at 28%
+   so the tail looks deliberate rather than clipped. Order is also stated in
+   text by each station's years, so nothing rests on colour alone. */
 .timeline::before {
-  content: ""; position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px;
+  content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px;
   border-radius: 2px;
-  background: linear-gradient(to bottom, var(--accent) 0%, var(--accent-3) 50%, var(--accent-2) 100%);
-  background-size: 100% 220%;
-  animation: flow 7s ease-in-out infinite; opacity: 0.9;
+  background: linear-gradient(to bottom,
+    var(--accent),
+    color-mix(in srgb, var(--accent) 28%, transparent));
 }
-@keyframes flow { 0%,100%{background-position:0 0} 50%{background-position:0 100%} }
-@media (prefers-reduced-motion: reduce) { .timeline::before { animation: none; } }
 .station { position: relative; padding-bottom: 44px; }
 .station:last-child { padding-bottom: 0; }
+/* Shape, not hue, marks the current era: filled now, hollow before. */
 .station .node {
-  position: absolute; left: -34px; top: 4px;
-  width: 18px; height: 18px; border-radius: 999px;
-  background: var(--ground); border: 2px solid var(--dotc, var(--accent));
+  position: absolute; left: -34px; top: 5px;
+  width: 16px; height: 16px; border-radius: 999px;
+  background: var(--ground); border: 2px solid var(--accent);
   box-shadow: 0 0 0 4px var(--ground);
 }
-.station .node::after {
+.station:first-child .node::after {
   content: ""; position: absolute; inset: 3px; border-radius: 999px;
-  background: var(--dotc, var(--accent));
+  background: var(--accent);
 }
+.station:not(:first-child) .node { border-color: color-mix(in srgb, var(--accent) 45%, var(--hairline)); }
 .station .years {
-  font-size: 0.84rem; font-weight: 600; letter-spacing: 0;
+  font-size: var(--fs-meta); font-weight: 600; letter-spacing: 0;
   color: var(--accent); font-variant-numeric: tabular-nums;
   margin-bottom: 5px;
 }
 .station h3 {
-  font-family: var(--sans); font-weight: 600; font-size: 1.34rem;
-  letter-spacing: -0.02em; margin-bottom: 7px;
+  font-family: var(--serif); font-weight: 600; font-size: var(--fs-h3);
+  letter-spacing: -0.01em; margin-bottom: 8px; line-height: 1.25;
 }
-.station p { color: var(--ink-muted); font-size: 1.06rem; margin-bottom: 14px; line-height: 1.55; }
-
-/* paper card */
-.paper {
-  display: block; background: var(--surface);
-  border: 1px solid var(--hairline); border-radius: 14px;
-  padding: 16px 18px; margin-bottom: 10px;
-  transition: border-color var(--ease), transform var(--spring), box-shadow var(--ease);
-}
-.paper:hover {
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--hairline));
-  transform: translateY(-3px);
-  box-shadow: 0 18px 40px -20px color-mix(in srgb, var(--accent) 45%, transparent),
-              0 8px 22px -18px rgba(0,0,0,0.55);
-}
-.paper .ptitle {
-  font-weight: 600; font-size: 1.08rem; line-height: 1.4; margin-bottom: 11px;
-  letter-spacing: -0.015em;
-}
-.paper .tags { display: flex; flex-wrap: wrap; gap: 7px; }
-.tag {
-  font-size: 0.78rem; font-weight: 500; letter-spacing: 0;
-  padding: 4px 10px; border-radius: 7px;
-  background: var(--ground-2); color: var(--ink-muted);
-  border: 1px solid var(--hairline);
-  transition: color var(--ease), border-color var(--ease);
-}
-.paper:hover .tag.lead { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 40%, var(--hairline)); }
-.incoming {
-  font-size: 0.9rem; font-weight: 500; color: var(--accent-2);
-  display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;
-}
-.incoming::before {
-  content: ""; width: 7px; height: 7px; border-radius: 999px;
-  background: var(--accent-2); box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-2) 60%, transparent);
-  animation: pulse 2.4s ease-out infinite;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent-2) 55%, transparent); }
-  70% { box-shadow: 0 0 0 8px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-@media (prefers-reduced-motion: reduce) { .incoming::before { animation: none; } }
+.station p { color: var(--ink-muted); font-size: var(--fs-body); line-height: 1.6; max-width: 60ch; }
 
 /* ============ publications ============ */
+/* Year anchors the list; venue sits in its own right-hand column. */
+.pub-year {
+  display: flex; align-items: center; gap: 16px;
+  font-size: var(--fs-meta); font-weight: 600; color: var(--ink-subtle);
+  font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
+  margin: 38px 0 4px;
+}
+.pub-year::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
+.sec-head + .pub-year { margin-top: 0; }
+
 .pub {
-  display: block; padding: 20px 0; border-bottom: 1px solid var(--hairline);
-  transition: transform var(--spring);
+  display: grid; grid-template-columns: 1fr auto; gap: 6px 24px;
+  padding: 18px 0; border-bottom: 1px solid var(--hairline);
 }
-.pub:hover { transform: translateX(4px); }
-.pub:last-child { border-bottom: 0; }
-.pub-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 11px; }
-.badge {
-  font-size: 0.8rem; font-weight: 700; letter-spacing: -0.01em;
-  padding: 4px 12px; border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 15%, transparent);
-  color: var(--accent);
-  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
-}
-.cofirst {
-  font-size: 0.76rem; font-weight: 600;
-  padding: 3px 10px; border-radius: 999px;
-  color: var(--ink-muted); border: 1px solid var(--hairline);
-}
-.venue-pre {
-  font-size: 0.84rem; font-weight: 600; color: var(--ink-subtle);
-  font-variant-numeric: tabular-nums;
-}
+/* .pub is a mix of <a> and <div>, so :last-child / :last-of-type both miss the
+   real last row — it's followed by .pub-note. Match on what actually follows. */
+.pub:has(+ .pub-year), .pub:has(+ .pub-note) { border-bottom: 0; }
 .pub .pub-title {
-  font-weight: 600; font-size: 1.16rem; line-height: 1.4; letter-spacing: -0.018em;
-  margin-bottom: 8px; transition: color var(--ease);
+  grid-column: 1;
+  font-weight: 600; font-size: var(--fs-lead); line-height: 1.4; letter-spacing: -0.015em;
+  transition: color var(--ease);
 }
-.pub:hover .pub-title { color: var(--accent); }
-.pub .authors { font-size: 0.98rem; color: var(--ink-muted); line-height: 1.5; }
+a.pub:hover .pub-title { color: var(--accent); }
+.pub .authors { grid-column: 1; font-size: var(--fs-meta); color: var(--ink-muted); line-height: 1.5; }
 .pub .authors b { color: var(--ink); font-weight: 600; }
-/* citation count (populated client-side from the scholar-crawler branch) */
-.cite-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 0.92rem; color: var(--ink-muted); }
-.cite-badge b { color: var(--accent); font-weight: 700; font-variant-numeric: tabular-nums; }
 .authors sup { color: var(--accent); font-weight: 700; }
-.pub-note { margin-top: 16px; font-size: 0.86rem; color: var(--ink-subtle); }
+.venue {
+  grid-column: 2; grid-row: 1; text-align: right;
+  font-size: var(--fs-meta); font-weight: 600; color: var(--ink-subtle);
+  font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 1px;
+}
+.venue.peer { color: var(--accent); }
+@media (max-width: 560px) {
+  .pub { grid-template-columns: 1fr; gap: 4px; }
+  .venue { grid-column: 1; grid-row: 1; text-align: left; }
+}
+/* citation count (populated client-side from the scholar-crawler branch) */
+.cite-badge { font-size: var(--fs-meta); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
+.cite-badge b { color: var(--accent); font-weight: 700; }
+.pub-note { margin-top: 20px; font-size: var(--fs-meta); color: var(--ink-subtle); }
 .pub-note sup { color: var(--accent); font-weight: 700; }
 
 /* ============ industry ============ */
@@ -377,63 +370,60 @@ section { padding: 76px 0; position: relative; }
   padding: 22px 0; border-bottom: 1px solid var(--hairline);
 }
 .job:last-child { border-bottom: 0; }
-.job .logo {
-  width: 52px; height: 52px; border-radius: 12px;
-  background: var(--surface); border: 1px solid var(--hairline);
-  display: grid; place-items: center; overflow: hidden;
-}
-.job .logo img { max-width: 66%; max-height: 66%; object-fit: contain; }
-.job h3 { font-family: var(--sans); font-weight: 600; font-size: 1.2rem; letter-spacing: -0.02em; }
-.job h3 .co-note { font-weight: 400; color: var(--ink-subtle); font-size: 0.9rem; }
-.job .role { color: var(--accent); font-size: 0.98rem; margin: 4px 0 8px; font-weight: 500; }
-.job .desc { color: var(--ink-muted); font-size: 1.02rem; line-height: 1.55; }
+.job h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-h3); letter-spacing: -0.01em; }
+.job h3 .co-note { font-family: var(--sans); font-weight: 400; color: var(--ink-subtle); font-size: var(--fs-meta); }
+.job .role { color: var(--accent); font-size: var(--fs-meta); margin: 4px 0 8px; font-weight: 500; }
+.job .desc { color: var(--ink-muted); font-size: var(--fs-body); line-height: 1.6; }
 .job .when {
-  font-size: 0.82rem; color: var(--ink-subtle); font-weight: 500;
-  white-space: nowrap; font-variant-numeric: tabular-nums; padding-top: 5px;
+  font-size: var(--fs-micro); color: var(--ink-subtle); font-weight: 500;
+  white-space: nowrap; font-variant-numeric: tabular-nums; padding-top: 6px;
 }
 @media (max-width: 560px) {
   .job { grid-template-columns: 44px 1fr; }
-  .job .logo { width: 44px; height: 44px; }
   .job .when { grid-column: 2; padding-top: 0; }
 }
 
 /* ============ education ============ */
 .edu {
-  display: grid; grid-template-columns: 72px 1fr auto; gap: 22px; align-items: center;
+  display: grid; grid-template-columns: 52px 1fr auto; gap: 20px; align-items: center;
   padding: 22px 0; border-bottom: 1px solid var(--hairline);
 }
 .edu:last-child { border-bottom: 0; }
-.edu .logo {
-  width: 72px; height: 72px; border-radius: 16px;
-  background: #ffffff; border: 1px solid var(--hairline);
+.edu .deg { font-weight: 600; font-size: var(--fs-lead); letter-spacing: -0.015em; }
+.edu .school { color: var(--ink-muted); font-size: var(--fs-meta); margin-top: 2px; }
+.edu .when { font-size: var(--fs-micro); color: var(--ink-subtle); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .edu { grid-template-columns: 44px 1fr; }
+  .edu .when { grid-column: 2; }
+}
+
+/* Shared logo plate. The university marks are dark ink and full-colour, so a
+   light ground is required in both themes — --plate dims it for dark mode
+   instead of punching a white hole in the page. */
+.job .logo, .edu .logo {
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--plate); border: 1px solid var(--hairline);
   display: grid; place-items: center; overflow: hidden;
 }
-.edu .logo img { width: 84%; height: 84%; object-fit: contain; }
-.edu .deg { font-weight: 600; font-size: 1.18rem; letter-spacing: -0.02em; }
-.edu .school { color: var(--ink-muted); font-size: 0.98rem; margin-top: 3px; }
-.edu .when { font-size: 0.82rem; color: var(--ink-subtle); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.job .logo img { max-width: 66%; max-height: 66%; object-fit: contain; }
+.edu .logo img { width: 78%; height: 78%; object-fit: contain; }
 @media (max-width: 560px) {
-  .edu { grid-template-columns: 56px 1fr; }
-  .edu .logo { width: 56px; height: 56px; }
-  .edu .when { grid-column: 2; }
+  .job .logo, .edu .logo { width: 44px; height: 44px; }
 }
 
 /* ============ footer / contact ============ */
 footer {
-  padding: 56px 0 72px; border-top: 1px solid var(--hairline); margin-top: 24px;
+  padding: 56px 0 72px; border-top: 1px solid var(--hairline); margin-top: var(--space-section);
 }
-footer .contact-line { font-family: var(--sans); font-weight: 600; font-size: 1.7rem; letter-spacing: -0.03em; margin-bottom: 22px; }
+/* the address is one long unbreakable token — let it wrap on narrow screens */
+footer .contact-line { font-family: var(--serif); font-weight: 600; font-size: var(--fs-h2); letter-spacing: -0.01em; margin-bottom: 22px; line-height: 1.2; overflow-wrap: break-word; }
 footer .contact-line a { color: var(--accent); border-bottom: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); transition: border-color var(--ease); }
 footer .contact-line a:hover { border-bottom-color: var(--accent); }
-footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.7; }
+footer .colophon { font-size: var(--fs-micro); color: var(--ink-subtle); line-height: 1.7; }
 
 /* ============ reduced transparency — solidify materials ============ */
 @media (prefers-reduced-transparency: reduce) {
   nav { background: var(--ground); backdrop-filter: none; -webkit-backdrop-filter: none; }
-  .paper {
-    background: var(--surface); backdrop-filter: none; -webkit-backdrop-filter: none;
-    border-color: var(--hairline);
-  }
 }
 
 /* ============ scroll reveal ============ */
@@ -442,7 +432,7 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
 .js .reveal.in { opacity: 1; transform: none; }
 @media (prefers-reduced-motion: reduce) {
   .js .reveal { opacity: 1 !important; transform: none !important; transition: none; }
-  .chip, .paper, .pub, nav { transition: none; }
+  .chip, .pub, nav { transition: none; }
 }
 </style>
 </head>
@@ -463,7 +453,7 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
 
 <a id="top"></a>
 <header class="hero" id="hero">
-  <div class="wrap hero-grid">
+  <div class="hero-wrap hero-grid">
     <div class="hero-text">
       <h1 class="name">Yu Chen</h1>
       <p class="thesis">AI researcher &amp; builder, working on <em>multimodal agents</em>.</p>
@@ -499,7 +489,11 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
       </div>
     </div>
     <div class="portrait">
-      <img src="assets/portrait.jpg" alt="Portrait of Yu Chen at golden hour, overlooking a river" width="280" height="280" />
+      <img src="assets/portrait.jpg"
+           srcset="assets/portrait-sm.jpg 512w, assets/portrait.jpg 1000w"
+           sizes="(max-width: 620px) 170px, 280px"
+           alt="Portrait of Yu Chen at golden hour, overlooking a river"
+           width="280" height="280" />
     </div>
   </div>
 </header>
@@ -510,8 +504,6 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
       <p class="lede reveal">I’m an incoming PhD student focusing on <strong>multimodal agent post-training</strong>, with the goal of enabling agents to perceive the world and make complex decisions more like humans.</p>
       <p class="lede reveal">My perspective is shaped by both research training and hands-on industry experience. I believe impactful research should not only push the boundaries of knowledge, but also solve real problems with <strong>scalable, simple, and robust</strong> methods.</p>
     </section>
-
-    <hr class="rule" />
 
     <section id="education">
       <div class="sec-head reveal">
@@ -535,112 +527,94 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
       </div>
     </section>
 
-    <hr class="rule" />
-
     <section id="research">
       <div class="sec-head reveal">
         <h2>Research</h2>
       </div>
       <div class="timeline">
-        <div class="station reveal" style="--dotc: var(--accent)">
+        <div class="station reveal">
           <span class="node"></span>
           <div class="years">2025 — Present</div>
           <h3>Video Understanding &amp; Multimodal Agent Post-Training</h3>
-          <p>Video understanding, long audio–video reasoning, and multimodal agent post-training.</p>
-          <a class="paper" href="https://arxiv.org/abs/2510.10689" target="_blank" rel="noopener">
-            <div class="ptitle">OmniVideoBench: Towards Audio-Visual Understanding Evaluation for Omni MLLMs</div>
-            <div class="tags"><span class="tag lead">ICLR 2026</span><span class="tag">Audio-Visual</span><span class="tag">Benchmark</span></div>
-          </a>
-          <a class="paper" href="https://arxiv.org/abs/2607.19339" target="_blank" rel="noopener">
-            <div class="ptitle">OmniReasoner: Thinking with Long Audio-Video via Native Tool Use</div>
-            <div class="tags"><span class="tag lead">arXiv 2026</span><span class="tag">Long Audio-Video</span><span class="tag">Tool Use</span></div>
-          </a>
+          <p>Video understanding, long audio–video reasoning, and multimodal agent post-training — teaching agents to hold hours of context and act on it.</p>
         </div>
 
-        <div class="station reveal" style="--dotc: color-mix(in srgb, var(--accent) 50%, var(--accent-2))">
+        <div class="station reveal">
           <span class="node"></span>
           <div class="years">2024 — 2025</div>
           <h3>Multimodal Representation Learning</h3>
-          <p>Fine-grained vision–language representation and pixel-text alignment.</p>
-          <a class="paper" href="https://arxiv.org/abs/2511.04601" target="_blank" rel="noopener">
-            <div class="ptitle">PixCLIP: Fine-grained Visual Language Understanding via Any-granularity Pixel-Text Alignment Learning</div>
-            <div class="tags"><span class="tag lead">ICML 2026</span><span class="tag">CLIP</span><span class="tag">Pixel-Text</span></div>
-          </a>
+          <p>Fine-grained vision–language representation and pixel-text alignment, down to any granularity.</p>
         </div>
 
-        <div class="station reveal" style="--dotc: var(--accent-2)">
+        <div class="station reveal">
           <span class="node"></span>
           <div class="years">2023 — 2024</div>
           <h3>EEG &amp; Brain–Computer Interfaces</h3>
           <p>EEG-based BCI and mental-health modeling — reading signal directly off the brain.</p>
-          <a class="paper" href="https://ieeexplore.ieee.org/abstract/document/10890734/" target="_blank" rel="noopener">
-            <div class="ptitle">STGE-Former: Spatial–Temporal Graph-Enhanced Transformer for EEG-Based Major Depressive Disorder Detection</div>
-            <div class="tags"><span class="tag lead">ICASSP 2025</span><span class="tag">EEG</span><span class="tag">Transformer</span></div>
-          </a>
         </div>
       </div>
     </section>
 
-    <hr class="rule" />
-
     <section id="publications">
       <div class="sec-head reveal">
         <h2>Publications</h2>
-        <span class="cite-badge" id="citeBadge"><b>60</b>&nbsp;citations · Google Scholar</span>
+        <span class="cite-badge" id="citeBadge" hidden></span>
       </div>
 
+      <div class="pub-year reveal">2026</div>
+
       <a class="pub reveal" href="https://arxiv.org/abs/2607.19339" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="venue-pre">arXiv · 2026</span></div>
         <div class="pub-title">OmniReasoner: Thinking with Long Audio-Video via Native Tool Use</div>
+        <div class="venue">arXiv</div>
         <div class="authors"><b>Yu Chen<sup>*</sup></b>, Caorui Li<sup>*</sup>, Ziyu Xiong, Yidong Wang, Mingqi Gao, Shuman Liu, Biao Liu, Chunfeng Yang, Anxiang Zeng, Haibo Zhang, Chaofan Chen</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2510.10689" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="badge">ICLR 2026</span></div>
         <div class="pub-title">OmniVideoBench: Towards Audio-Visual Understanding Evaluation for Omni MLLMs</div>
+        <div class="venue peer">ICLR</div>
         <div class="authors">Caorui Li<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Yiyan Ji<sup>*</sup>, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Wentao Wang, Zhenghao Song, Dingling Zhang, et al.</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2511.04601" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="badge">ICML 2026</span></div>
         <div class="pub-title">PixCLIP: Achieving Fine-grained Visual Language Understanding via Any-granularity Pixel-Text Alignment Learning</div>
+        <div class="venue peer">ICML</div>
         <div class="authors">Yicheng Xiao<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Haoxuan Ma<sup>*</sup>, Jiale Hong, Caorui Li, Lingxiang Wu, Haiyun Guo, Jinqiao Wang</div>
       </a>
 
+      <a class="pub reveal" href="https://arxiv.org/abs/2607.05150" target="_blank" rel="noopener">
+        <div class="pub-title">Claim-Level Rubric Rewards for Video Caption Reinforcement Learning</div>
+        <div class="venue">arXiv</div>
+        <div class="authors">Mingqi Gao, Hongyuan Dong, Yifei Chen, Zhisheng Zhong, Zheng Ruan, Wenjin Hou, <b>Yu Chen</b>, Han Hu, Yansong Tang</div>
+      </a>
+
+      <div class="pub-year reveal">2025</div>
+
       <div class="pub reveal">
-        <div class="pub-meta"><span class="badge">NeurIPS 2025</span></div>
         <div class="pub-title">FlowPrune: Accelerating Attention Flow Calculation by Pruning Flow Network</div>
+        <div class="venue peer">NeurIPS</div>
         <div class="authors">Shuo Xu, <b>Yu Chen</b>, Shuxia Lin, Xin Geng, Xu Yang</div>
       </div>
 
       <a class="pub reveal" href="https://ieeexplore.ieee.org/abstract/document/10890734/" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="badge">ICASSP 2025</span></div>
-        <div class="pub-title">STGE-Former: Spatial-Temporal Graph-Enhanced Transformer for EEG-Based Major Depressive Disorder Detection</div>
+        <div class="pub-title">STGE-Former: Spatial–Temporal Graph-Enhanced Transformer for EEG-Based Major Depressive Disorder Detection</div>
+        <div class="venue peer">ICASSP</div>
         <div class="authors"><b>Yu Chen</b>, Chunfeng Yang</div>
       </a>
 
-      <a class="pub reveal" href="https://arxiv.org/abs/2607.05150" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="venue-pre">arXiv · 2026</span></div>
-        <div class="pub-title">Claim-Level Rubric Rewards for Video Caption Reinforcement Learning</div>
-        <div class="authors">Mingqi Gao, Hongyuan Dong, Yifei Chen, Zhisheng Zhong, Zheng Ruan, Wenjin Hou, <b>Yu Chen</b>, Han Hu, Yansong Tang</div>
-      </a>
-
       <a class="pub reveal" href="https://arxiv.org/abs/2508.08275" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="venue-pre">arXiv · 2025</span></div>
         <div class="pub-title">MLLM-CBench: A Comprehensive Benchmark for Continual Instruction Tuning of Multimodal LLMs with Chain-of-Thought Reasoning Analysis</div>
+        <div class="venue">arXiv</div>
         <div class="authors">Haiyun Guo, ZhiYan Hou, <b>Yu Chen</b>, Jinghan Sun, Yadu Zhou, Yuzhe Guo, Shujing Zhu, Kuan Zhu, Jinqiao Wang</div>
       </a>
 
       <a class="pub reveal" href="https://arxiv.org/abs/2505.08199" target="_blank" rel="noopener">
-        <div class="pub-meta"><span class="venue-pre">arXiv · 2025</span></div>
         <div class="pub-title">A Multi-scale Representation Learning Framework for Long-Term Time Series Forecasting</div>
+        <div class="venue">arXiv</div>
         <div class="authors">Boshi Gao, Qingjian Ni, Fanbo Ju, <b>Yu Chen</b>, Ziqi Zhao</div>
       </a>
 
       <p class="pub-note reveal"><sup>*</sup> Equal contribution</p>
     </section>
-
-    <hr class="rule" />
 
     <section id="experience">
       <div class="sec-head reveal">
@@ -684,7 +658,7 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
       <p class="contact-line reveal">Let’s talk — <a href="mailto:yu.chen.8525@gmail.com">yu.chen.8525@gmail.com</a></p>
       <p class="colophon reveal">
         © 2026 Yu Chen · Beijing &amp; Nanjing<br />
-        Set in SF Pro / Inter.
+        Set in Newsreader &amp; SF Pro.
       </p>
     </div>
   </footer>
@@ -695,24 +669,49 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
   var root = document.documentElement;
   root.classList.add("js"); // arms the reveal styles; without JS, content stays visible
 
-  // Theme toggle — persist choice, respect system default otherwise
-  var stored = null;
-  try { stored = localStorage.getItem("theme"); } catch (e) {}
-  if (stored) { root.setAttribute("data-theme", stored); }
-  else {
-    // follow system: remove explicit attr so media query drives it
-    root.removeAttribute("data-theme");
-  }
+  // Theme toggle. The stored choice is already applied by the head script;
+  // this only handles switching. color-scheme drives light-dark(), and the
+  // data-theme attribute is what the @supports fallback palette keys off.
+  var SUN = "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4";
+  var MOON = "M20.5 13.4A8.5 8.5 0 1 1 10.6 3.5a6.7 6.7 0 0 0 9.9 9.9z";
   var toggle = document.getElementById("themeToggle");
+  var icon = document.getElementById("themeIcon");
+
   function effectiveTheme() {
     var attr = root.getAttribute("data-theme");
     if (attr === "dark" || attr === "light") return attr;
     return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
+
+  // The two <meta theme-color> tags are media-query driven, so they can't
+  // follow a manual switch. Once the user picks, drive a single tag from here.
+  function syncThemeColor(theme) {
+    var metas = document.querySelectorAll('meta[name="theme-color"]');
+    for (var i = 0; i < metas.length; i++) metas[i].remove();
+    var m = document.createElement("meta");
+    m.name = "theme-color";
+    m.content = theme === "dark" ? "#0c0e13" : "#fbfbfd";
+    document.head.appendChild(m);
+  }
+
+  function paintToggle(theme) {
+    if (icon) icon.querySelector("path").setAttribute("d", theme === "dark" ? MOON : SUN);
+    if (icon) icon.querySelector("circle").style.display = theme === "dark" ? "none" : "";
+    toggle.setAttribute("aria-label", theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
+  }
+
+  paintToggle(effectiveTheme());
   toggle.addEventListener("click", function () {
     var next = effectiveTheme() === "dark" ? "light" : "dark";
+    root.style.colorScheme = "only " + next;
     root.setAttribute("data-theme", next);
     try { localStorage.setItem("theme", next); } catch (e) {}
+    paintToggle(next);
+    syncThemeColor(next);
+  });
+  // Follow the system while no explicit choice has been made.
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
+    if (!root.hasAttribute("data-theme")) paintToggle(effectiveTheme());
   });
 
   // Nav show after hero
@@ -753,8 +752,14 @@ footer .colophon { font-size: 0.82rem; color: var(--ink-subtle); line-height: 1.
     fetch("https://cdn.jsdelivr.net/gh/RockyChen0205/RockyChen0205.github.io@google-scholar-stats/results/gs_data_shieldsio.json")
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
+        // Stays hidden on failure rather than showing a number baked in at
+        // commit time, which would silently go stale.
         if (d && d.message) {
-          citeEl.innerHTML = "<b>" + d.message + "</b>&nbsp;citations · Google Scholar";
+          citeEl.textContent = "";
+          var n = document.createElement("b");
+          n.textContent = d.message;
+          citeEl.appendChild(n);
+          citeEl.appendChild(document.createTextNode(" citations · Google Scholar"));
           citeEl.hidden = false;
         }
       })
