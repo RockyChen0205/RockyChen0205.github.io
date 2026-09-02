@@ -4,768 +4,172 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Yu Chen</title>
-<meta name="description" content="Yu Chen — Incoming PhD student at UCAS working on multimodal agent post-training: teaching agents to perceive the world and decide the way we do." />
+<meta name="description" content="Yu Chen — PhD student at UCAS / CASIA (Institute of Automation, Chinese Academy of Sciences), advised by Prof. Changsheng Xu, working on multimodal agent post-training." />
 <link rel="icon" href="favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <link rel="manifest" href="site.webmanifest" />
-<meta name="theme-color" content="#f4f6fa" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0c0e13" media="(prefers-color-scheme: dark)" />
-<link rel="preload" href="assets/newsreader-var.woff2" as="font" type="font/woff2" crossorigin />
-<script>
-/* Apply a stored theme before first paint. Without this, a stored choice that
-   disagrees with the OS setting shows the wrong palette for a frame. */
-(function () {
-  try {
-    var t = localStorage.getItem("theme");
-    if (t === "light" || t === "dark") {
-      document.documentElement.style.colorScheme = "only " + t;
-      document.documentElement.setAttribute("data-theme", t);
-    }
-  } catch (e) {}
-})();
-</script>
-<style>
-/* Newsreader, variable — opsz axis carries real weight here: the same face
-   renders from ~68px display down to 22px h3. Subset to wght 600 only. */
-@font-face {
-  font-family: "Newsreader";
-  src: url("assets/newsreader-var.woff2") format("woff2-variations");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* ============ design tokens ============ */
-:root {
-  /* type — serif is the display voice; system sans does everything else */
-  --serif: "Newsreader", "Iowan Old Style", Palatino, Georgia, serif;
-  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", system-ui, sans-serif;
-
-  /* type scale — 8 steps against an 18px base */
-  --fs-display: clamp(2.9rem, 6.5vw, 4.25rem);
-  --fs-h2: clamp(1.85rem, 3.6vw, 2.25rem);
-  --fs-h3: 1.375rem;
-  --fs-tagline: clamp(1.25rem, 2.4vw, 1.5rem);
-  --fs-lead: 1.125rem;
-  --fs-body: 1rem;
-  --fs-meta: 0.875rem;
-  --fs-micro: 0.75rem;
-
-  /* motion */
-  --spring: 480ms cubic-bezier(0.22, 1, 0.36, 1);
-  --ease: 260ms cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* measure and rhythm */
-  --maxw: 760px;
-  --maxw-hero: 1000px;
-  --gutter: 28px;
-  --space-section: 96px;
-  --space-head: 28px;
-}
-
-/* One palette, one source of truth. light-dark() resolves against the used
-   color-scheme, which the toggle pins to `only light` / `only dark`. */
-:root {
-  color-scheme: light dark;
-  --ground:     light-dark(#fbfbfd, #0c0e13);
-  --ground-2:   light-dark(#f2f4f8, #12151c);
-  --surface:    light-dark(#ffffff, #161a22);
-  --ink:        light-dark(#12141a, #eef2f8);
-  --ink-muted:  light-dark(#56606f, #a2acbd);
-  --ink-subtle: light-dark(#8b96a5, #6a7488);
-  --hairline:   light-dark(#e6e8ee, rgba(255,255,255,0.10));
-  --accent:     light-dark(#2563d9, #5b8dff);
-  /* logo plate — the university SVGs are dark ink and full-colour, so they
-     need a light ground in both themes; dimmed in dark so it doesn't glare */
-  --plate:      light-dark(#ffffff, #dfe3ea);
-  --nav-bg:     light-dark(rgba(251,251,253,0.72), rgba(12,14,19,0.66));
-}
-
-/* Pre-2024 browsers only. A custom property holding an unsupported function
-   still parses, failing later at substitution — so a plain fallback
-   declaration before light-dark() would never win. Hence @supports, and hence
-   the duplication, quarantined where modern browsers never read it. */
-@supports not (color: light-dark(#fff, #000)) {
-  :root {
-    --ground: #fbfbfd; --ground-2: #f2f4f8; --surface: #ffffff;
-    --ink: #12141a; --ink-muted: #56606f; --ink-subtle: #8b96a5;
-    --hairline: #e6e8ee; --accent: #2563d9; --plate: #ffffff;
-    --nav-bg: rgba(251,251,253,0.72);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground: #0c0e13; --ground-2: #12151c; --surface: #161a22;
-      --ink: #eef2f8; --ink-muted: #a2acbd; --ink-subtle: #6a7488;
-      --hairline: rgba(255,255,255,0.10); --accent: #5b8dff; --plate: #dfe3ea;
-      --nav-bg: rgba(12,14,19,0.66);
-    }
-  }
-  :root[data-theme="dark"] {
-    --ground: #0c0e13; --ground-2: #12151c; --surface: #161a22;
-    --ink: #eef2f8; --ink-muted: #a2acbd; --ink-subtle: #6a7488;
-    --hairline: rgba(255,255,255,0.10); --accent: #5b8dff; --plate: #dfe3ea;
-    --nav-bg: rgba(12,14,19,0.66);
-  }
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
-
-body {
-  font-family: var(--sans);
-  background: var(--ground);
-  color: var(--ink);
-  line-height: 1.6;
-  font-size: 18px;
-  letter-spacing: -0.01em;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  font-optical-sizing: auto;
-  overflow-x: hidden;
-}
-
-a { color: inherit; text-decoration: none; }
-::selection { background: var(--accent); color: var(--ground); }
-/* keyboard focus — instant, never animated (Hallmark gate) */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-:focus:not(:focus-visible) { outline: none; }
-
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
-
-/* ============ top nav ============ */
-nav {
-  position: fixed; inset: 0 0 auto 0; z-index: 50;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px var(--gutter);
-  background: var(--nav-bg);
-  backdrop-filter: blur(22px) saturate(180%);
-  -webkit-backdrop-filter: blur(22px) saturate(180%);
-  border-bottom: 1px solid transparent;
-  transform: translateY(-100%);
-  transition: transform var(--spring), border-color var(--ease);
-}
-nav.show { transform: translateY(0); border-bottom-color: var(--hairline); }
-nav .mark {
-  font-family: var(--serif); font-size: var(--fs-lead); font-weight: 600;
-  letter-spacing: -0.01em;
-  display: inline-flex; align-items: center; gap: 9px;
-}
-nav .mark img {
-  width: 30px; height: 30px; border-radius: 9px; object-fit: cover;
-  border: 1px solid var(--hairline);
-}
-nav .mark .dot { color: var(--accent); }
-nav .nav-links { display: flex; align-items: center; gap: 22px; }
-nav .nav-links a {
-  font-size: var(--fs-meta); color: var(--ink-muted);
-  transition: color var(--ease);
-}
-nav .nav-links a:hover { color: var(--ink); }
-@media (max-width: 640px) { nav .nav-links a.hide-sm { display: none; } }
-
-.theme-toggle {
-  display: grid; place-items: center;
-  width: 32px; height: 32px; border-radius: 999px;
-  border: 1px solid var(--hairline); background: transparent;
-  color: var(--ink-muted); cursor: pointer;
-  transition: color var(--ease), border-color var(--ease), transform var(--ease);
-}
-.theme-toggle:hover { color: var(--ink); border-color: var(--accent); transform: rotate(-18deg); }
-.theme-toggle svg { width: 16px; height: 16px; }
-
-/* ============ hero ============ */
-header.hero {
-  position: relative;
-  padding: 128px 0 76px;
-  overflow: hidden;
-  /* one subtle, static single-hue wash — no drifting blobs */
-  background: radial-gradient(120% 78% at 50% -12%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 58%);
-}
-/* faint grain — texture without decoration (Hallmark-endorsed, very low opacity) */
-header.hero::before {
-  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-}
-/* The hero runs wider than the text column, but its text still has to line up
-   with everything below. The 28px gutters cancel on both sides, so the offset
-   is exactly half the difference in container width. Gated at 1040px: below
-   that the hero container is viewport-bound, and a fixed inset would drift. */
-.hero-wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gutter); }
-@media (min-width: 1040px) {
-  .hero-wrap { max-width: var(--maxw-hero); }
-  .hero-text { padding-left: calc((var(--maxw-hero) - var(--maxw)) / 2); }
-}
-.hero-grid {
-  position: relative; z-index: 1;
-  display: grid; grid-template-columns: 1fr auto; gap: 44px; align-items: center;
-}
-@media (max-width: 620px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 32px; }
-  header.hero { padding-top: 104px; }
-}
-
-h1.name {
-  font-family: var(--serif); font-weight: 600;
-  font-size: var(--fs-display); line-height: 1.05;
-  letter-spacing: -0.02em; text-wrap: balance;
-  margin-bottom: 20px;
-  color: var(--ink);
-}
-h1.name .dot { color: var(--accent); }
-/* sans against the serif name — the contrast is the point */
-.thesis {
-  font-family: var(--sans); font-weight: 500;
-  font-size: var(--fs-tagline); line-height: 1.32;
-  letter-spacing: -0.02em; color: var(--ink); max-width: 24ch; text-wrap: balance;
-}
-.thesis em { color: var(--accent); font-style: normal; }
-
-.roleline {
-  margin-top: 26px; font-size: var(--fs-body); color: var(--ink-muted);
-  display: flex; flex-direction: column; gap: 4px;
-}
-.roleline strong { color: var(--ink); font-weight: 600; }
-
-/* portrait */
-.portrait {
-  position: relative; width: 280px; height: 280px; flex-shrink: 0;
-}
-@media (max-width: 620px) { .portrait { width: 170px; height: 170px; } }
-.portrait img {
-  width: 100%; height: 100%; object-fit: cover; border-radius: 24px;
-  border: 1px solid var(--hairline);
-  box-shadow: 0 24px 60px -28px rgba(0,0,0,0.55);
-}
-.portrait::after {
-  content: ""; position: absolute; inset: 0; border-radius: 24px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); pointer-events: none;
-}
-
-/* social row */
-.socials { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 10px; }
-.chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 7px 13px; border-radius: 999px;
-  border: 1px solid var(--hairline); background: var(--surface);
-  font-size: var(--fs-meta); color: var(--ink-muted);
-  transition: color var(--ease), border-color var(--ease), transform var(--spring), background var(--ease);
-}
-.chip svg { width: 14px; height: 14px; }
-.chip:hover {
-  color: var(--ink); border-color: var(--accent); transform: translateY(-2px);
-}
-.chip:active { transform: scale(0.97); }
-.theme-toggle:active { transform: scale(0.94); }
-
-/* ============ sections ============ */
-/* Asymmetric rhythm: generous space before a heading, tight after its rule.
-   The rule belongs to the heading now — no free-standing <hr> between sections. */
-section { padding: var(--space-section) 0 0; position: relative; }
-section:last-of-type { padding-bottom: var(--space-section); }
-.sec-head {
-  margin-bottom: var(--space-head);
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--hairline);
-  display: flex; flex-wrap: wrap; align-items: baseline;
-  justify-content: space-between; gap: 12px;
-}
-.sec-head h2 {
-  font-family: var(--serif); font-weight: 600;
-  font-size: var(--fs-h2); letter-spacing: -0.01em;
-  line-height: 1.1;
-}
-.lede {
-  font-size: var(--fs-lead); line-height: 1.65; color: var(--ink-muted);
-  max-width: 60ch; letter-spacing: -0.01em;
-}
-.lede + .lede { margin-top: 18px; }
-.lede strong { color: var(--ink); font-weight: 600; }
-
-/* ============ research timeline ============ */
-.timeline { position: relative; padding-left: 34px; }
-/* Recency reads top-down: the rail fades into the past. The floor stays at 28%
-   so the tail looks deliberate rather than clipped. Order is also stated in
-   text by each station's years, so nothing rests on colour alone. */
-.timeline::before {
-  content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px;
-  border-radius: 2px;
-  background: linear-gradient(to bottom,
-    var(--accent),
-    color-mix(in srgb, var(--accent) 28%, transparent));
-}
-.station { position: relative; padding-bottom: 44px; }
-.station:last-child { padding-bottom: 0; }
-/* Shape, not hue, marks the current era: filled now, hollow before. */
-.station .node {
-  position: absolute; left: -34px; top: 5px;
-  width: 16px; height: 16px; border-radius: 999px;
-  background: var(--ground); border: 2px solid var(--accent);
-  box-shadow: 0 0 0 4px var(--ground);
-}
-.station:first-child .node::after {
-  content: ""; position: absolute; inset: 3px; border-radius: 999px;
-  background: var(--accent);
-}
-.station:not(:first-child) .node { border-color: color-mix(in srgb, var(--accent) 45%, var(--hairline)); }
-.station .years {
-  font-size: var(--fs-meta); font-weight: 600; letter-spacing: 0;
-  color: var(--accent); font-variant-numeric: tabular-nums;
-  margin-bottom: 5px;
-}
-.station h3 {
-  font-family: var(--serif); font-weight: 600; font-size: var(--fs-h3);
-  letter-spacing: -0.01em; margin-bottom: 8px; line-height: 1.25;
-}
-.station p { color: var(--ink-muted); font-size: var(--fs-body); line-height: 1.6; max-width: 60ch; }
-
-/* ============ publications ============ */
-/* Year anchors the list; venue sits in its own right-hand column. */
-.pub-year {
-  display: flex; align-items: center; gap: 16px;
-  font-size: var(--fs-meta); font-weight: 600; color: var(--ink-subtle);
-  font-variant-numeric: tabular-nums; letter-spacing: 0.02em;
-  margin: 38px 0 4px;
-}
-.pub-year::after { content: ""; flex: 1; height: 1px; background: var(--hairline); }
-.sec-head + .pub-year { margin-top: 0; }
-
-.pub {
-  display: grid; grid-template-columns: 1fr auto; gap: 6px 24px;
-  padding: 18px 0; border-bottom: 1px solid var(--hairline);
-}
-/* .pub is a mix of <a> and <div>, so :last-child / :last-of-type both miss the
-   real last row — it's followed by .pub-note. Match on what actually follows. */
-.pub:has(+ .pub-year), .pub:has(+ .pub-note) { border-bottom: 0; }
-.pub .pub-title {
-  grid-column: 1;
-  font-weight: 600; font-size: var(--fs-lead); line-height: 1.4; letter-spacing: -0.015em;
-  transition: color var(--ease);
-}
-a.pub:hover .pub-title { color: var(--accent); }
-.pub .authors { grid-column: 1; font-size: var(--fs-meta); color: var(--ink-muted); line-height: 1.5; }
-.pub .authors b { color: var(--ink); font-weight: 600; }
-.authors sup { color: var(--accent); font-weight: 700; }
-.venue {
-  grid-column: 2; grid-row: 1; text-align: right;
-  font-size: var(--fs-meta); font-weight: 600; color: var(--ink-subtle);
-  font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 1px;
-}
-.venue.peer { color: var(--accent); }
-@media (max-width: 560px) {
-  .pub { grid-template-columns: 1fr; gap: 4px; }
-  .venue { grid-column: 1; grid-row: 1; text-align: left; }
-}
-/* citation count (populated client-side from the scholar-crawler branch) */
-.cite-badge { font-size: var(--fs-meta); color: var(--ink-muted); font-variant-numeric: tabular-nums; }
-.cite-badge b { color: var(--accent); font-weight: 700; }
-.pub-note { margin-top: 20px; font-size: var(--fs-meta); color: var(--ink-subtle); }
-.pub-note sup { color: var(--accent); font-weight: 700; }
-
-/* ============ industry ============ */
-.job {
-  display: grid; grid-template-columns: 52px 1fr auto; gap: 20px; align-items: start;
-  padding: 22px 0; border-bottom: 1px solid var(--hairline);
-}
-.job:last-child { border-bottom: 0; }
-.job h3 { font-family: var(--serif); font-weight: 600; font-size: var(--fs-h3); letter-spacing: -0.01em; }
-.job h3 .co-note { font-family: var(--sans); font-weight: 400; color: var(--ink-subtle); font-size: var(--fs-meta); }
-.job .role { color: var(--accent); font-size: var(--fs-meta); margin: 4px 0 8px; font-weight: 500; }
-.job .desc { color: var(--ink-muted); font-size: var(--fs-body); line-height: 1.6; }
-.job .when {
-  font-size: var(--fs-micro); color: var(--ink-subtle); font-weight: 500;
-  white-space: nowrap; font-variant-numeric: tabular-nums; padding-top: 6px;
-}
-@media (max-width: 560px) {
-  .job { grid-template-columns: 44px 1fr; }
-  .job .when { grid-column: 2; padding-top: 0; }
-}
-
-/* ============ education ============ */
-.edu {
-  display: grid; grid-template-columns: 52px 1fr auto; gap: 20px; align-items: center;
-  padding: 22px 0; border-bottom: 1px solid var(--hairline);
-}
-.edu:last-child { border-bottom: 0; }
-.edu .deg { font-weight: 600; font-size: var(--fs-lead); letter-spacing: -0.015em; }
-.edu .school { color: var(--ink-muted); font-size: var(--fs-meta); margin-top: 2px; }
-.edu .when { font-size: var(--fs-micro); color: var(--ink-subtle); font-weight: 500; white-space: nowrap; font-variant-numeric: tabular-nums; }
-@media (max-width: 560px) {
-  .edu { grid-template-columns: 44px 1fr; }
-  .edu .when { grid-column: 2; }
-}
-
-/* Shared logo plate. The university marks are dark ink and full-colour, so a
-   light ground is required in both themes — --plate dims it for dark mode
-   instead of punching a white hole in the page. */
-.job .logo, .edu .logo {
-  width: 52px; height: 52px; border-radius: 12px;
-  background: var(--plate); border: 1px solid var(--hairline);
-  display: grid; place-items: center; overflow: hidden;
-}
-.job .logo img { max-width: 66%; max-height: 66%; object-fit: contain; }
-.edu .logo img { width: 78%; height: 78%; object-fit: contain; }
-@media (max-width: 560px) {
-  .job .logo, .edu .logo { width: 44px; height: 44px; }
-}
-
-/* ============ footer / contact ============ */
-footer {
-  padding: 56px 0 72px; border-top: 1px solid var(--hairline); margin-top: var(--space-section);
-}
-/* the address is one long unbreakable token — let it wrap on narrow screens */
-footer .contact-line { font-family: var(--serif); font-weight: 600; font-size: var(--fs-h2); letter-spacing: -0.01em; margin-bottom: 22px; line-height: 1.2; overflow-wrap: break-word; }
-footer .contact-line a { color: var(--accent); border-bottom: 2px solid color-mix(in srgb, var(--accent) 35%, transparent); transition: border-color var(--ease); }
-footer .contact-line a:hover { border-bottom-color: var(--accent); }
-footer .colophon { font-size: var(--fs-micro); color: var(--ink-subtle); line-height: 1.7; }
-
-/* ============ reduced transparency — solidify materials ============ */
-@media (prefers-reduced-transparency: reduce) {
-  nav { background: var(--ground); backdrop-filter: none; -webkit-backdrop-filter: none; }
-}
-
-/* ============ scroll reveal ============ */
-/* Hidden state only applies once JS is confirmed — no JS ⇒ content stays visible */
-.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 620ms ease, transform 620ms cubic-bezier(0.22,1,0.36,1); }
-.js .reveal.in { opacity: 1; transform: none; }
-@media (prefers-reduced-motion: reduce) {
-  .js .reveal { opacity: 1 !important; transform: none !important; transition: none; }
-  .chip, .pub, nav { transition: none; }
-}
-</style>
+<link rel="stylesheet" href="stylesheet.css" />
 </head>
 <body>
 
-<nav id="nav">
-  <a class="mark" href="#top"><img src="assets/logo-cat.png" alt="" /><span>Yu Chen<span class="dot">.</span></span></a>
-  <div class="nav-links">
-    <a href="#research" class="hide-sm">Research</a>
-    <a href="#publications" class="hide-sm">Publications</a>
-    <a href="#experience" class="hide-sm">Experience</a>
-    <a href="assets/Yu-Chen-CV.pdf" class="hide-sm" target="_blank" rel="noopener">CV</a>
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle color theme" title="Toggle theme">
-      <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-    </button>
-  </div>
-</nav>
-
-<a id="top"></a>
-<header class="hero" id="hero">
-  <div class="hero-wrap hero-grid">
-    <div class="hero-text">
-      <h1 class="name">Yu Chen</h1>
-      <p class="thesis">AI researcher &amp; builder, working on <em>multimodal agents</em>.</p>
-      <div class="roleline">
-        <span>Incoming <strong>PhD Student</strong> · University of Chinese Academy of Sciences</span>
-        <span><strong>B.S.</strong> · Southeast University</span>
-      </div>
-      <div class="socials">
-        <a class="chip" href="mailto:yu.chen.8525@gmail.com">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
-          Email
-        </a>
-        <a class="chip" href="https://scholar.google.com/citations?user=Zv9ykAMAAAAJ" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 1 8l11 6 9-4.9V17h2V8L12 2z"/><path d="M5 13.2V17c0 1.7 3.1 3 7 3s7-1.3 7-3v-3.8l-7 3.8-7-3.8z"/></svg>
-          Scholar
-        </a>
-        <a class="chip" href="https://github.com/RockyChen0205" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.85 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.79.62-3.38-1.37-3.38-1.37-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05a9.4 9.4 0 0 1 5 0c1.91-1.32 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
-          GitHub
-        </a>
-        <a class="chip" href="assets/Yu-Chen-CV.pdf" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M7 3h7l4 4v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M14 3v4h4"/></svg>
-          CV
-        </a>
-        <a class="chip" href="https://openreview.net/profile?id=~Yu_Chen49" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg>
-          OpenReview
-        </a>
-        <a class="chip" href="https://www.linkedin.com/in/yu-chen-521131357/" target="_blank" rel="noopener">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 5 8.5a2.5 2.5 0 0 1-.02-5zM3 9h4v12H3zM9 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.4c0-1.29-.02-2.95-1.8-2.95-1.8 0-2.08 1.4-2.08 2.85V21H9z"/></svg>
-          LinkedIn
-        </a>
-      </div>
-    </div>
-    <div class="portrait">
-      <img src="assets/portrait.jpg"
-           srcset="assets/portrait-sm.jpg 512w, assets/portrait.jpg 1000w"
-           sizes="(max-width: 620px) 170px, 280px"
-           alt="Portrait of Yu Chen at golden hour, overlooking a river"
-           width="280" height="280" />
+<div class="top-navbar" id="nav">
+  <div class="container">
+    <div class="navbar-left"><span class="navbar-title">Yu Chen</span></div>
+    <div class="navbar-right">
+      <a href="#home">Home</a>
+      <a href="#news">News</a>
+      <a href="#publications-anchor">Publications</a>
+      <a href="#education">Education</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
     </div>
   </div>
-</header>
+</div>
 
-<main>
-  <div class="wrap">
-    <section id="about">
-      <p class="lede reveal">I’m an incoming PhD student focusing on <strong>multimodal agent post-training</strong>, with the goal of enabling agents to perceive the world and make complex decisions more like humans.</p>
-      <p class="lede reveal">My perspective is shaped by both research training and hands-on industry experience. I believe impactful research should not only push the boundaries of knowledge, but also solve real problems with <strong>scalable, simple, and robust</strong> methods.</p>
-    </section>
+<div class="page-container">
 
-    <section id="education">
-      <div class="sec-head reveal">
-        <h2>Education</h2>
+<div id="home"></div>
+<table class="profile-table">
+<tr>
+<td class="profile-info">
+
+<name>Yu Chen (陈宇)</name>
+<p>
+I am currently a 1st-year Ph.D. student at the <strong>University of Chinese Academy of Sciences (UCAS)</strong> and the <strong>Institute of Automation, Chinese Academy of Sciences (CASIA)</strong>, advised by <a href="https://scholar.google.com/citations?user=hI9NRDkAAAAJ" target="_blank" rel="noopener">Prof. Changsheng Xu</a> in the National Laboratory of Pattern Recognition (NLPR). My research focuses on <strong>multimodal agent post-training</strong> and <span class="hint" data-tip="Multimodal Large Language Models">video understanding</span>, with the goal of enabling agents to perceive the world and make complex decisions more like humans.
+</p>
+<p>
+My perspective is shaped by both research training and hands-on industry experience. I believe impactful research should not only push the boundaries of knowledge, but also solve real problems with <strong>scalable, simple, and robust</strong> methods.
+</p>
+<p>
+<a href="mailto:yu.chen.8525@gmail.com">Email</a> &nbsp;/&nbsp;
+<a href="https://scholar.google.com/citations?user=Zv9ykAMAAAAJ" target="_blank" rel="noopener">Google Scholar</a> &nbsp;/&nbsp;
+<a href="https://github.com/RockyChen0205" target="_blank" rel="noopener">GitHub</a> &nbsp;/&nbsp;
+<a href="https://openreview.net/profile?id=~Yu_Chen49" target="_blank" rel="noopener">OpenReview</a> &nbsp;/&nbsp;
+<a href="https://www.linkedin.com/in/yu-chen-521131357/" target="_blank" rel="noopener">LinkedIn</a> &nbsp;/&nbsp;
+<a href="assets/Yu-Chen-CV.pdf" target="_blank" rel="noopener">CV</a>
+</p>
+
+</td>
+<td class="profile-photo">
+<div class="photo-wrap">
+<img src="assets/portrait.jpg" alt="Yu Chen" width="160" />
+</div>
+</td>
+</tr>
+</table>
+
+<h2 id="news">News</h2>
+<ul>
+<li><strong>[2026-09]</strong> OmniReasoner is accepted to <strong>EMNLP 2026 (Main)</strong>.</li>
+<li><strong>[2026]</strong> Started my Ph.D. at <strong>UCAS / CASIA</strong>, advised by Prof. Changsheng Xu.</li>
+</ul>
+
+<h2 id="publications-anchor">Publications [ <a href="https://scholar.google.com/citations?user=Zv9ykAMAAAAJ" target="_blank" rel="noopener">Full List</a> ]</h2>
+<div class="pub-switch-row">
+  <span class="pub-switch" id="show-selected">Show selected</span> /
+  <span class="pub-switch" id="show-date">Show by date</span> /
+  <span class="pub-switch" id="show-topic">Show by topic</span>
+</div>
+<p id="pub-years"></p>
+<p id="pub-topics"></p>
+<div id="publications-list"></div>
+<p><sup>*</sup> Equal contribution</p>
+
+<h2 id="education">Education</h2>
+<ul class="cv-list">
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/ucas.svg" alt="University of Chinese Academy of Sciences" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution">University of Chinese Academy of Sciences (UCAS)</span>
+        <span class="cv-date">2026 — Present</span>
       </div>
-      <div class="edu reveal">
-        <div class="logo"><img src="assets/ucas.svg" alt="University of Chinese Academy of Sciences" /></div>
-        <div>
-          <div class="deg">Ph.D.</div>
-          <div class="school">University of Chinese Academy of Sciences (UCAS) · Beijing</div>
-        </div>
-        <div class="when">2026 — Present</div>
-      </div>
-      <div class="edu reveal">
-        <div class="logo"><img src="assets/seu.svg" alt="Southeast University" /></div>
-        <div>
-          <div class="deg">B.S. in Artificial Intelligence</div>
-          <div class="school">Southeast University · Nanjing</div>
-        </div>
-        <div class="when">2022 — 2026</div>
-      </div>
-    </section>
-
-    <section id="research">
-      <div class="sec-head reveal">
-        <h2>Research</h2>
-      </div>
-      <div class="timeline">
-        <div class="station reveal">
-          <span class="node"></span>
-          <div class="years">2025 — Present</div>
-          <h3>Video Understanding &amp; Multimodal Agent Post-Training</h3>
-          <p>Video understanding, long audio–video reasoning, and multimodal agent post-training — teaching agents to hold hours of context and act on it.</p>
-        </div>
-
-        <div class="station reveal">
-          <span class="node"></span>
-          <div class="years">2024 — 2025</div>
-          <h3>Multimodal Representation Learning</h3>
-          <p>Fine-grained vision–language representation and pixel-text alignment, down to any granularity.</p>
-        </div>
-
-        <div class="station reveal">
-          <span class="node"></span>
-          <div class="years">2023 — 2024</div>
-          <h3>EEG &amp; Brain–Computer Interfaces</h3>
-          <p>EEG-based BCI and mental-health modeling — reading signal directly off the brain.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="publications">
-      <div class="sec-head reveal">
-        <h2>Publications</h2>
-        <span class="cite-badge" id="citeBadge" hidden></span>
-      </div>
-
-      <div class="pub-year reveal">2026</div>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2607.19339" target="_blank" rel="noopener">
-        <div class="pub-title">OmniReasoner: Thinking with Long Audio-Video via Native Tool Use</div>
-        <div class="venue">arXiv</div>
-        <div class="authors"><b>Yu Chen<sup>*</sup></b>, Caorui Li<sup>*</sup>, Ziyu Xiong, Yidong Wang, Mingqi Gao, Shuman Liu, Biao Liu, Chunfeng Yang, Anxiang Zeng, Haibo Zhang, Chaofan Chen</div>
-      </a>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2510.10689" target="_blank" rel="noopener">
-        <div class="pub-title">OmniVideoBench: Towards Audio-Visual Understanding Evaluation for Omni MLLMs</div>
-        <div class="venue peer">ICLR</div>
-        <div class="authors">Caorui Li<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Yiyan Ji<sup>*</sup>, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Wentao Wang, Zhenghao Song, Dingling Zhang, et al.</div>
-      </a>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2511.04601" target="_blank" rel="noopener">
-        <div class="pub-title">PixCLIP: Achieving Fine-grained Visual Language Understanding via Any-granularity Pixel-Text Alignment Learning</div>
-        <div class="venue peer">ICML</div>
-        <div class="authors">Yicheng Xiao<sup>*</sup>, <b>Yu Chen<sup>*</sup></b>, Haoxuan Ma<sup>*</sup>, Jiale Hong, Caorui Li, Lingxiang Wu, Haiyun Guo, Jinqiao Wang</div>
-      </a>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2607.05150" target="_blank" rel="noopener">
-        <div class="pub-title">Claim-Level Rubric Rewards for Video Caption Reinforcement Learning</div>
-        <div class="venue">arXiv</div>
-        <div class="authors">Mingqi Gao, Hongyuan Dong, Yifei Chen, Zhisheng Zhong, Zheng Ruan, Wenjin Hou, <b>Yu Chen</b>, Han Hu, Yansong Tang</div>
-      </a>
-
-      <div class="pub-year reveal">2025</div>
-
-      <div class="pub reveal">
-        <div class="pub-title">FlowPrune: Accelerating Attention Flow Calculation by Pruning Flow Network</div>
-        <div class="venue peer">NeurIPS</div>
-        <div class="authors">Shuo Xu, <b>Yu Chen</b>, Shuxia Lin, Xin Geng, Xu Yang</div>
-      </div>
-
-      <a class="pub reveal" href="https://ieeexplore.ieee.org/abstract/document/10890734/" target="_blank" rel="noopener">
-        <div class="pub-title">STGE-Former: Spatial–Temporal Graph-Enhanced Transformer for EEG-Based Major Depressive Disorder Detection</div>
-        <div class="venue peer">ICASSP</div>
-        <div class="authors"><b>Yu Chen</b>, Chunfeng Yang</div>
-      </a>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2508.08275" target="_blank" rel="noopener">
-        <div class="pub-title">MLLM-CBench: A Comprehensive Benchmark for Continual Instruction Tuning of Multimodal LLMs with Chain-of-Thought Reasoning Analysis</div>
-        <div class="venue">arXiv</div>
-        <div class="authors">Haiyun Guo, ZhiYan Hou, <b>Yu Chen</b>, Jinghan Sun, Yadu Zhou, Yuzhe Guo, Shujing Zhu, Kuan Zhu, Jinqiao Wang</div>
-      </a>
-
-      <a class="pub reveal" href="https://arxiv.org/abs/2505.08199" target="_blank" rel="noopener">
-        <div class="pub-title">A Multi-scale Representation Learning Framework for Long-Term Time Series Forecasting</div>
-        <div class="venue">arXiv</div>
-        <div class="authors">Boshi Gao, Qingjian Ni, Fanbo Ju, <b>Yu Chen</b>, Ziqi Zhao</div>
-      </a>
-
-      <p class="pub-note reveal"><sup>*</sup> Equal contribution</p>
-    </section>
-
-    <section id="experience">
-      <div class="sec-head reveal">
-        <h2>Experience</h2>
-      </div>
-
-      <div class="job reveal">
-        <div class="logo"><img src="assets/shopee.png" alt="Shopee" /></div>
-        <div>
-          <h3>Shopee <span class="co-note">· LLM Team, Pre-training</span></h3>
-          <div class="role">Large Language Model Algorithm Intern</div>
-          <div class="desc">Multimodal agentic post-training within the pre-training LLM team.</div>
-        </div>
-        <div class="when">Sep 2025 — Apr 2026</div>
-      </div>
-
-      <div class="job reveal">
-        <div class="logo"><img src="assets/pinch.jpg" alt="Pinch" /></div>
-        <div>
-          <h3><a href="https://www.linkedin.com/company/startpinch/" target="_blank" rel="noopener">Pinch</a> <span class="co-note">· YC-backed AI startup</span></h3>
-          <div class="role">Machine Learning Engineer Intern</div>
-          <div class="desc">Voice cloning and text-to-speech for AI simultaneous interpretation — preserving speaker identity while keeping translation fast and accurate.</div>
-        </div>
-        <div class="when">Jan 2025 — Jun 2025</div>
-      </div>
-
-      <div class="job reveal">
-        <div class="logo"><img src="assets/huawei.png" alt="Huawei" /></div>
-        <div>
-          <h3>Huawei <span class="co-note">· ICT</span></h3>
-          <div class="role">AI Engineer Intern</div>
-          <div class="desc">Multimodal large-model training and inference optimization — accelerating and migrating workloads from GPUs to Ascend NPUs.</div>
-        </div>
-        <div class="when">Jun 2024 — Sep 2024</div>
-      </div>
-    </section>
-  </div>
-
-  <footer>
-    <div class="wrap">
-      <p class="contact-line reveal">Let’s talk — <a href="mailto:yu.chen.8525@gmail.com">yu.chen.8525@gmail.com</a></p>
-      <p class="colophon reveal">
-        © 2026 Yu Chen · Beijing &amp; Nanjing<br />
-        Set in Newsreader &amp; SF Pro.
-      </p>
+      <div class="cv-role">Ph.D. Student, Beijing</div>
     </div>
-  </footer>
-</main>
+  </li>
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/casia.jpg" alt="Institute of Automation, Chinese Academy of Sciences" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution">Institute of Automation, Chinese Academy of Sciences (CASIA)</span>
+        <span class="cv-date">2026 — Present</span>
+      </div>
+      <div class="cv-role">Ph.D. Student, Beijing</div>
+    </div>
+  </li>
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/seu.svg" alt="Southeast University" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution">Southeast University</span>
+        <span class="cv-date">2022 — 2026</span>
+      </div>
+      <div class="cv-role">B.S. in Artificial Intelligence, Nanjing</div>
+    </div>
+  </li>
+</ul>
 
-<script>
-(function () {
-  var root = document.documentElement;
-  root.classList.add("js"); // arms the reveal styles; without JS, content stays visible
+<h2 id="experience">Experience</h2>
+<ul class="cv-list">
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/shopee.png" alt="Shopee" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution">Shopee · LLM Team, Pre-training</span>
+        <span class="cv-date">Sep 2025 — Apr 2026</span>
+      </div>
+      <div class="cv-role">Large Language Model Algorithm Intern</div>
+      <div class="cv-detail">Multimodal agentic post-training within the pre-training LLM team.</div>
+    </div>
+  </li>
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/pinch.jpg" alt="Pinch" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution"><a href="https://www.linkedin.com/company/startpinch/" target="_blank" rel="noopener">Pinch</a> · YC-backed AI startup</span>
+        <span class="cv-date">Jan 2025 — Jun 2025</span>
+      </div>
+      <div class="cv-role">Machine Learning Engineer Intern</div>
+      <div class="cv-detail">Voice cloning and text-to-speech for AI simultaneous interpretation — preserving speaker identity while keeping translation fast and accurate.</div>
+    </div>
+  </li>
+  <li class="cv-item">
+    <div class="cv-logo"><img src="assets/huawei.png" alt="Huawei" /></div>
+    <div class="cv-body">
+      <div class="cv-row">
+        <span class="cv-institution">Huawei · ICT</span>
+        <span class="cv-date">Jun 2024 — Sep 2024</span>
+      </div>
+      <div class="cv-role">AI Engineer Intern</div>
+      <div class="cv-detail">Multimodal large-model training and inference optimization — accelerating and migrating workloads from GPUs to Ascend NPUs.</div>
+    </div>
+  </li>
+</ul>
 
-  // Theme toggle. The stored choice is already applied by the head script;
-  // this only handles switching. color-scheme drives light-dark(), and the
-  // data-theme attribute is what the @supports fallback palette keys off.
-  var SUN = "M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4";
-  var MOON = "M20.5 13.4A8.5 8.5 0 1 1 10.6 3.5a6.7 6.7 0 0 0 9.9 9.9z";
-  var toggle = document.getElementById("themeToggle");
-  var icon = document.getElementById("themeIcon");
+<h2>Academic Services</h2>
+<p>
+Conference Reviewer: ICML, EMNLP
+</p>
 
-  function effectiveTheme() {
-    var attr = root.getAttribute("data-theme");
-    if (attr === "dark" || attr === "light") return attr;
-    return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
+<h2 id="contact">Contact</h2>
+<p>
+Reach me at <a href="mailto:yu.chen.8525@gmail.com">yu.chen.8525@gmail.com</a>.
+</p>
 
-  // The two <meta theme-color> tags are media-query driven, so they can't
-  // follow a manual switch. Once the user picks, drive a single tag from here.
-  function syncThemeColor(theme) {
-    var metas = document.querySelectorAll('meta[name="theme-color"]');
-    for (var i = 0; i < metas.length; i++) metas[i].remove();
-    var m = document.createElement("meta");
-    m.name = "theme-color";
-    m.content = theme === "dark" ? "#0c0e13" : "#fbfbfd";
-    document.head.appendChild(m);
-  }
+<br />
+<table style="width:100%;border:0;border-spacing:0;border-collapse:collapse;">
+<tbody><tr>
+<td style="border:0;padding:0;font-size:12px;text-align:left;">
+<p>© 2026 Yu Chen · Beijing &amp; Nanjing. Last updated: <span id="last-updated"></span></p>
+</td>
+</tr></tbody>
+</table>
 
-  function paintToggle(theme) {
-    if (icon) icon.querySelector("path").setAttribute("d", theme === "dark" ? MOON : SUN);
-    if (icon) icon.querySelector("circle").style.display = theme === "dark" ? "none" : "";
-    toggle.setAttribute("aria-label", theme === "dark" ? "Switch to light theme" : "Switch to dark theme");
-  }
+</div>
 
-  paintToggle(effectiveTheme());
-  toggle.addEventListener("click", function () {
-    var next = effectiveTheme() === "dark" ? "light" : "dark";
-    root.style.colorScheme = "only " + next;
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("theme", next); } catch (e) {}
-    paintToggle(next);
-    syncThemeColor(next);
-  });
-  // Follow the system while no explicit choice has been made.
-  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () {
-    if (!root.hasAttribute("data-theme")) paintToggle(effectiveTheme());
-  });
-
-  // Nav show after hero
-  var nav = document.getElementById("nav");
-  var onScroll = function () {
-    if (window.scrollY > 220) nav.classList.add("show");
-    else nav.classList.remove("show");
-  };
-  onScroll();
-  window.addEventListener("scroll", onScroll, { passive: true });
-
-  // Scroll reveal
-  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var reveals = document.querySelectorAll(".reveal");
-  if (reduce || !("IntersectionObserver" in window)) {
-    reveals.forEach(function (el) { el.classList.add("in"); });
-  } else {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (e, i) {
-        if (e.isIntersecting) {
-          var el = e.target;
-          setTimeout(function () { el.classList.add("in"); }, Math.min(i * 60, 180));
-          io.unobserve(el);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-    reveals.forEach(function (el) { io.observe(el); });
-    // Safety net: if anything is still hidden after 3s, reveal it regardless.
-    setTimeout(function () {
-      reveals.forEach(function (el) { el.classList.add("in"); });
-    }, 3000);
-  }
-
-  // Google Scholar citation count — written daily by the crawler workflow to the
-  // `google-scholar-stats` branch; fetched here via the jsDelivr CDN. Fails silently.
-  var citeEl = document.getElementById("citeBadge");
-  if (citeEl && "fetch" in window) {
-    fetch("https://cdn.jsdelivr.net/gh/RockyChen0205/RockyChen0205.github.io@google-scholar-stats/results/gs_data_shieldsio.json")
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (d) {
-        // Stays hidden on failure rather than showing a number baked in at
-        // commit time, which would silently go stale.
-        if (d && d.message) {
-          citeEl.textContent = "";
-          var n = document.createElement("b");
-          n.textContent = d.message;
-          citeEl.appendChild(n);
-          citeEl.appendChild(document.createTextNode(" citations · Google Scholar"));
-          citeEl.hidden = false;
-        }
-      })
-      .catch(function () {});
-  }
-})();
-</script>
+<script src="publications.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
