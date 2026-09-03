@@ -8,7 +8,10 @@ const publications = [
     authors: "<strong>Yu Chen</strong><sup>*</sup>, Caorui Li<sup>*</sup>, Ziyu Xiong, Yidong Wang, Mingqi Gao, Shuman Liu, Biao Liu, Chunfeng Yang, Anxiang Zeng, Haibo Zhang, Chaofan Chen",
     shortVenue: "EMNLP 2026 (Main)",
     highlighted: true,
-    links: [{ label: "arXiv", url: "https://arxiv.org/abs/2607.19339" }]
+    links: [
+      { label: "arXiv", url: "https://arxiv.org/abs/2607.19339" },
+      { label: "Code", url: "https://github.com/RockyChen0205/OmniReasoner" }
+    ]
   },
   {
     year: 2026,
@@ -19,7 +22,10 @@ const publications = [
     authors: "Caorui Li<sup>*</sup>, <strong>Yu Chen</strong><sup>*</sup>, Yiyan Ji<sup>*</sup>, Jin Xu, Zhenyu Cui, Shihao Li, Yuanxing Zhang, Wentao Wang, Zhenghao Song, Dingling Zhang, et al.",
     shortVenue: "ICLR 2026",
     highlighted: true,
-    links: [{ label: "arXiv", url: "https://arxiv.org/abs/2510.10689" }]
+    links: [
+      { label: "arXiv", url: "https://arxiv.org/abs/2510.10689" },
+      { label: "Code", url: "https://github.com/NJU-LINK/OmniVideoBench" }
+    ]
   },
   {
     year: 2026,
@@ -30,7 +36,10 @@ const publications = [
     authors: "Yicheng Xiao<sup>*</sup>, <strong>Yu Chen</strong><sup>*</sup>, Haoxuan Ma<sup>*</sup>, Jiale Hong, Caorui Li, Lingxiang Wu, Haiyun Guo, Jinqiao Wang",
     shortVenue: "ICML 2026",
     highlighted: true,
-    links: [{ label: "arXiv", url: "https://arxiv.org/abs/2511.04601" }]
+    links: [
+      { label: "arXiv", url: "https://arxiv.org/abs/2511.04601" },
+      { label: "Code", url: "https://github.com/StuHude/PixCLIP" }
+    ]
   },
   {
     year: 2026,
