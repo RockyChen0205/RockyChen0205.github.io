@@ -1,4 +1,22 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const langBtn = document.getElementById('lang-toggle');
+    if (langBtn) {
+        const enEl = document.querySelector('.lang-en');
+        const zhEl = document.querySelector('.lang-zh');
+        const setLang = (lang) => {
+            enEl.hidden = lang === 'zh';
+            zhEl.hidden = lang !== 'zh';
+            langBtn.textContent = lang === 'zh' ? 'English' : '中文';
+            try { localStorage.setItem('bio-lang', lang); } catch (e) {}
+        };
+        let saved = 'en';
+        try { saved = localStorage.getItem('bio-lang') || 'en'; } catch (e) {}
+        setLang(saved);
+        const toggle = () => setLang(zhEl.hidden ? 'zh' : 'en');
+        langBtn.addEventListener('click', toggle);
+        langBtn.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+    }
+
     const pubList = document.getElementById('publications-list');
     const pubYears = document.getElementById('pub-years');
     const pubTopics = document.getElementById('pub-topics');

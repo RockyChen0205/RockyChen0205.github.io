@@ -120,6 +120,24 @@ name {
   font-size: 32px;
 }
 
+.lang-toggle {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 10px;
+  border: 1px solid #1772d0;
+  border-radius: 12px;
+  color: #1772d0;
+  font-size: 14px;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+}
+
+.lang-toggle:hover {
+  background: #1772d0;
+  color: #fff;
+}
+
 span.highlight {
   background-color: #ffffd0;
 }
