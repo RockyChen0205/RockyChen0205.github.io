@@ -343,9 +343,9 @@ ul:not(.cv-list) > li::marker {
 }
 
 .profile-photo {
-  width: 190px;
-  text-align: center;
-  padding-right: 32px;
+  width: 170px;
+  text-align: left;
+  padding: 0 32px 0 0;
 }
 
 .photo-wrap {
